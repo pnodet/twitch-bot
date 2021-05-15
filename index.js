@@ -23,6 +23,11 @@ const getRating = async username => {
   return `Désolé, c'est un échec`;
 };
 
+const theRoulette = async user => {
+  const theOne = Math.floor(Math.random() * 6);
+  theOne === 0 ? true : false;
+};
+
 async function main() {
   const clientId = process.env.CLIENT_ID;
   const clientSecret = process.env.CLIENT_SECRET;
@@ -67,18 +72,28 @@ async function main() {
     );
   });
 
-  chatClient.onSubGift((channel, user, subInfo) => {
+  const giftCounts = new Map();
+
+  chatClient.onCommunitySub((channel, user, subInfo) => {
+    const previousGiftCount = giftCounts.get(user) ?? 0;
+    giftCounts.set(user, previousGiftCount + subInfo.count);
     chatClient.say(
       channel,
-      `🎁 SUB GIFT DE @${subInfo.gifter} ! Merci d'avoir fait de @${user} un viking !`
+      `🎁 RANDOM SUB GIFT DE @${user} ! Merci d'avoir fait ${subInfo.count} nouveaux viking !`
     );
   });
 
-  chatClient.onCommunitySub((channel, user) => {
-    chatClient.say(
-      channel,
-      `🎁 RANDOM SUB GIFT DE @${user} ! Merci d'avoir transformé un serf en viking !`
-    );
+  chatClient.onSubGift((channel, recipient, subInfo) => {
+    const user = subInfo.gifter;
+    const previousGiftCount = giftCounts.get(user) ?? 0;
+    if (previousGiftCount > 0) {
+      giftCounts.set(user, previousGiftCount - 1);
+    } else {
+      chatClient.say(
+        channel,
+        `🎁 SUB GIFT DE @${user} ! Merci d'avoir fait de @${recipient} un viking !`
+      );
+    }
   });
 
   chatClient.onRaid((channel, user, raidInfo) => {
@@ -105,6 +120,14 @@ async function main() {
     if (command == 'elo') {
       const result = await getRating(commandArgs[0]);
       chatClient.say(channel, result);
+    } else if (command == 'roulette') {
+      const theOne = Math.floor(Math.random() * 6);
+      if (theOne === 0) {
+        chatClient.say(channel, `PERDU`);
+        await chatClient.timeout(channel, user, 45);
+      } else {
+        chatClient.say(channel, 'GAGNÉ');
+      }
     } else {
       chatClient.say(
         channel,
