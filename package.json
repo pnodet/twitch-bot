@@ -1,0 +1,25 @@
+{
+  "name": "twitch-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pnxdxt/twitch-bot.git"
+  },
+  "author": "Paul Nodet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pnxdxt/twitch-bot/issues"
+  },
+  "homepage": "https://github.com/pnxdxt/twitch-bot#readme",
+  "dependencies": {
+    "dotenv": "^9.0.2",
+    "twitch-auth": "^4.5.5",
+    "twitch-chat-client": "^4.5.5"
+  }
+}
