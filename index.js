@@ -1,10 +1,27 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
 import {RefreshableAuthProvider, StaticAuthProvider} from 'twitch-auth';
 import {ChatClient} from 'twitch-chat-client';
-import {promises as fs} from 'fs';
+
 import {LIST_COMMANDS} from './commands.js';
 
-dotenv.config();
+import {promises as fs} from 'fs';
+import got from 'got';
+
+const getRating = async username => {
+  try {
+    const response = await got(`https://lichess.org/api/user/${username}`);
+    const data = JSON.parse(response.body);
+    const rankBullet = data.perfs.bullet.rating;
+    const rankBlitz = data.perfs.blitz.rating;
+    const rankRapid = data.perfs.rapid.rating;
+    return `Classement de ${username} ♟ bullet : ${rankBullet} ♟ blitz : ${rankBlitz} ♟ rapide : ${rankRapid}`;
+  } catch (err) {
+    console.log(err);
+  }
+  return `Désolé, c'est un échec`;
+};
 
 async function main() {
   const clientId = process.env.CLIENT_ID;
@@ -57,23 +74,43 @@ async function main() {
     );
   });
 
-  chatClient.onCommunitySub((channel, user, subInfo) => {
+  chatClient.onCommunitySub((channel, user) => {
     chatClient.say(
       channel,
       `🎁 RANDOM SUB GIFT DE @${user} ! Merci d'avoir transformé un serf en viking !`
     );
   });
 
-  chatClient.onMessage((channel, user, message) => {
-    if (!message.startsWith('!')) return;
-
-    const args = message.slice(1).split(' ');
-    const command = args.shift().toLowerCase();
-
+  chatClient.onRaid((channel, user, raidInfo) => {
     chatClient.say(
       channel,
-      LIST_COMMANDS[command] ?? "Désolé, cette commande n'existe pas encore…"
+      `⚡️ UN RAID DE @${user} ! ⚔️ Merci pour les ${raidInfo.viewerCount} viewers ⚔️`
     );
+  });
+
+  chatClient.onHosted((channel, byChannel, auto, viewers) => {
+    if (auto) return;
+    chatClient.say(
+      channel,
+      `⚡️ UN HOST DE ${byChannel} ! ⚔️ Merci pour les ${viewers} viewers ⚔️`
+    );
+  });
+
+  chatClient.onMessage(async (channel, user, message) => {
+    if (!message.startsWith('!')) return;
+
+    const commandArgs = message.slice(1).split(' ');
+    const command = commandArgs.shift().toLowerCase();
+
+    if (command == 'elo') {
+      const result = await getRating(commandArgs[0]);
+      chatClient.say(channel, result);
+    } else {
+      chatClient.say(
+        channel,
+        LIST_COMMANDS[command] ?? "Désolé, cette commande n'existe pas encore…"
+      );
+    }
   });
 
   console.log('Connecting…');

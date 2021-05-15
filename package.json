@@ -19,6 +19,7 @@
   "homepage": "https://github.com/pnxdxt/twitch-bot#readme",
   "dependencies": {
     "dotenv": "^9.0.2",
+    "got": "^11.8.2",
     "twitch-auth": "^4.5.5",
     "twitch-chat-client": "^4.5.5"
   }
