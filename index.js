@@ -23,11 +23,6 @@ const getRating = async username => {
   return `Désolé, c'est un échec`;
 };
 
-const theRoulette = async user => {
-  const theOne = Math.floor(Math.random() * 6);
-  theOne === 0 ? true : false;
-};
-
 async function main() {
   const clientId = process.env.CLIENT_ID;
   const clientSecret = process.env.CLIENT_SECRET;
@@ -56,7 +51,7 @@ async function main() {
     }
   );
 
-  const chatClient = new ChatClient(authProvider, {channels: ['detnop']});
+  const chatClient = new ChatClient(authProvider, {channels: ['chessvikings']});
 
   chatClient.onSub((channel, user) => {
     chatClient.say(
@@ -124,14 +119,14 @@ async function main() {
       const theOne = Math.floor(Math.random() * 6);
       if (theOne === 0) {
         chatClient.say(channel, `PERDU`);
-        await chatClient.timeout(channel, user, 45);
+        chatClient.send(`/timeout ${user} 45`);
       } else {
         chatClient.say(channel, 'GAGNÉ');
       }
     } else {
       chatClient.say(
         channel,
-        LIST_COMMANDS[command] ?? "Désolé, cette commande n'existe pas encore…"
+        LIST_COMMANDS[command] ?? "Oups, cette commande n'existe pas encore…"
       );
     }
   });

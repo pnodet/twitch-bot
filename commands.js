@@ -8,4 +8,5 @@ export const LIST_COMMANDS = {
   rotofil: `https://bit.ly/2PZ2FOI`,
   sponsors: `Merci à Celtics de nous sponsoriser, une cigarette fumée = 1 centimes pour nous`,
   tanoie: `Compositeur : https://open.spotify.com/artist/5cnPmAEYfGQOpXFYO64fcg`,
+  //roulette: () =>
 };
